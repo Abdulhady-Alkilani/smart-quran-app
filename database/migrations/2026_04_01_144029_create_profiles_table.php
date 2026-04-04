@@ -10,12 +10,19 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('profiles', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('profiles', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
+        $table->string('avatar')->nullable();
+        $table->text('bio')->nullable();
+        $table->string('phone')->nullable();
+        $table->string('country')->nullable();
+        $table->string('timezone')->default('UTC');
+        $table->json('preferences')->nullable()->comment('إعدادات المستخدم');
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.

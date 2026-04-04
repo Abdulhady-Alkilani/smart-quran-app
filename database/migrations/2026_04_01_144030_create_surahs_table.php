@@ -10,12 +10,17 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::create('surahs', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-    }
+{
+    Schema::create('surahs', function (Blueprint $table) {
+        $table->id();
+        $table->integer('number')->unique()->comment('رقم السورة 1-114');
+        $table->string('name_ar')->comment('اسم السورة بالعربية');
+        $table->string('name_en')->comment('اسم السورة بالإنجليزية');
+        $table->string('revelation_type')->comment('مكية أو مدنية');
+        $table->integer('total_ayahs');
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.
