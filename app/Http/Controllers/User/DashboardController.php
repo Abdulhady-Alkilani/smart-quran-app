@@ -12,6 +12,11 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
+        // Prevent admin from accessing student dashboard
+        if ($user->roles()->where('name', 'admin')->exists()) {
+            return redirect('/admin');
+        }
+
         // 1. حساب عدد الآيات المحفوظة
         $memorizedCount = $user->memorizationProgress()
             ->where('status', 'memorized')

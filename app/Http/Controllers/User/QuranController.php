@@ -17,8 +17,13 @@ class QuranController extends Controller
     }
 
     // عرض آيات سورة معينة مع حالة حفظ المستخدم لها
-    public function show(Surah $surah, Request $request)
+    public function show($surah, Request $request)
     {
+        // دعم التنقل بالرقم أو بالـ Model
+        if (!$surah instanceof Surah) {
+            $surah = Surah::where('number', $surah)->orWhere('id', $surah)->firstOrFail();
+        }
+
         $user = $request->user();
 
         // جلب الآيات مع حالة الحفظ الخاصة بهذا المستخدم تحديداً
