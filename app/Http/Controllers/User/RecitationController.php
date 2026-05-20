@@ -29,11 +29,11 @@ class RecitationController extends Controller
     public function store(Request $request, Ayah $ayah)
     {
         $request->validate([
-            'audio' => 'required|file|mimes:wav,mp3,webm,ogg,m4a',
+            'audio' => 'required|file',
         ]);
 
         $user = $request->user();
-        $path = $request->file('audio')->store('recitations', 'local');
+        $path = $request->file('audio')->store('recitations', 'public');
 
         $attempt = RecitationAttempt::create([
             'user_id' => $user->id,
@@ -42,7 +42,7 @@ class RecitationController extends Controller
         ]);
 
         try {
-            $audioFullPath = storage_path('app/'.$path);
+            $audioFullPath = storage_path('app/public/'.$path);
             $transcribedText = $this->speechService->transcribe($audioFullPath);
 
             if (! $transcribedText) {
@@ -89,6 +89,9 @@ class RecitationController extends Controller
                     'mistakes_count' => $matchResult['mistakes_count'],
                     'is_passed' => $matchResult['is_passed'],
                     'transcribed_text' => $transcribedText,
+                    'reference_text' => $ayah->text_imlaei,
+                    'word_diff' => $matchResult['word_diff'],
+                    'pass_threshold' => 90,
                 ],
             ]);
         } catch (\Exception $e) {

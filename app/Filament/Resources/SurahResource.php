@@ -19,11 +19,20 @@ class SurahResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
 
-    protected static ?string $navigationLabel = 'سور القرآن';
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.surahs');
+    }
 
-    protected static ?string $modelLabel = 'سورة';
+    public static function getModelLabel(): string
+    {
+        return __('filament.surah');
+    }
 
-    protected static ?string $pluralModelLabel = 'سور القرآن';
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.surahs');
+    }
 
     public static function canCreate(): bool
     {
@@ -35,20 +44,20 @@ class SurahResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('number')
-                    ->label('رقم السورة')
+                    ->label(__('filament.number'))
                     ->numeric()
                     ->disabled(),
                 Forms\Components\TextInput::make('name_ar')
-                    ->label('الاسم بالعربية')
+                    ->label(__('filament.name_ar'))
                     ->disabled(),
                 Forms\Components\TextInput::make('name_en')
-                    ->label('الاسم بالإنجليزية')
+                    ->label(__('filament.name_en'))
                     ->disabled(),
                 Forms\Components\TextInput::make('revelation_type')
-                    ->label('نوع الوحي')
+                    ->label(__('filament.revelation_type'))
                     ->disabled(),
                 Forms\Components\TextInput::make('total_ayahs')
-                    ->label('عدد الآيات')
+                    ->label(__('filament.total_ayahs'))
                     ->numeric()
                     ->disabled(),
             ]);
@@ -59,16 +68,16 @@ class SurahResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('number')
-                    ->label('الرقم')
+                    ->label(__('filament.number'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name_ar')
-                    ->label('الاسم بالعربية')
+                    ->label(__('filament.name_ar'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name_en')
-                    ->label('الاسم بالإنجليزية')
+                    ->label(__('filament.name_en'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('revelation_type')
-                    ->label('نوع الوحي')
+                    ->label(__('filament.revelation_type'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Meccan' => 'warning',
@@ -76,28 +85,28 @@ class SurahResource extends Resource
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'Meccan' => 'مكية',
-                        'Medinan' => 'مدنية',
+                        'Meccan' => __('filament.meccan'),
+                        'Medinan' => __('filament.medinan'),
                         default => $state,
                     }),
                 Tables\Columns\TextColumn::make('total_ayahs')
-                    ->label('عدد الآيات')
+                    ->label(__('filament.total_ayahs'))
                     ->badge(),
                 Tables\Columns\TextColumn::make('ayahs_count')
-                    ->label('آيات محفوظة في DB')
+                    ->label(__('filament.ayahs'))
                     ->counts('ayahs')
                     ->badge(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('revelation_type')
-                    ->label('نوع الوحي')
+                    ->label(__('filament.revelation_type'))
                     ->options([
-                        'Meccan' => 'مكية',
-                        'Medinan' => 'مدنية',
+                        'Meccan' => __('filament.meccan'),
+                        'Medinan' => __('filament.medinan'),
                     ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->label('عرض'),
+                Tables\Actions\ViewAction::make()->label(__('filament.view')),
             ])
             ->bulkActions([]);
     }
@@ -107,13 +116,13 @@ class SurahResource extends Resource
         return $infolist
             ->schema([
                 Infolists\Components\TextEntry::make('number')
-                    ->label('رقم السورة'),
+                    ->label(__('filament.number')),
                 Infolists\Components\TextEntry::make('name_ar')
-                    ->label('الاسم بالعربية'),
+                    ->label(__('filament.name_ar')),
                 Infolists\Components\TextEntry::make('name_en')
-                    ->label('الاسم بالإنجليزية'),
+                    ->label(__('filament.name_en')),
                 Infolists\Components\TextEntry::make('revelation_type')
-                    ->label('نوع الوحي')
+                    ->label(__('filament.revelation_type'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Meccan' => 'warning',
@@ -121,12 +130,12 @@ class SurahResource extends Resource
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'Meccan' => 'مكية',
-                        'Medinan' => 'مدنية',
+                        'Meccan' => __('filament.meccan'),
+                        'Medinan' => __('filament.medinan'),
                         default => $state,
                     }),
                 Infolists\Components\TextEntry::make('total_ayahs')
-                    ->label('عدد الآيات'),
+                    ->label(__('filament.total_ayahs')),
             ]);
     }
 

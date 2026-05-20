@@ -18,6 +18,7 @@ class SyncQuranDataCommand extends Command
         $this->info('بدء جلب بيانات القرآن الكريم...');
 
         $this->syncSurahs();
+        $this->fixClassification();
         $this->syncAyahs();
 
         $this->info('تم جلب بيانات القرآن الكريم بنجاح!');
@@ -58,6 +59,21 @@ class SyncQuranDataCommand extends Command
         $bar->finish();
         $this->newLine();
         $this->info('تم حفظ '.count($surahs).' سورة بنجاح.');
+    }
+
+    private function fixClassification(): void
+    {
+        $this->info('تصحيح تصنيف السور...');
+
+        $medinan = [2, 3, 4, 5, 8, 9, 22, 24, 33, 47, 48, 49, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 76, 98, 99, 110];
+        $medinanFlip = array_flip($medinan);
+
+        foreach (Surah::all() as $surah) {
+            $correctType = isset($medinanFlip[$surah->number]) ? 'Medinan' : 'Meccan';
+            if ($surah->revelation_type !== $correctType) {
+                $surah->update(['revelation_type' => $correctType]);
+            }
+        }
     }
 
     private function syncAyahs(): void

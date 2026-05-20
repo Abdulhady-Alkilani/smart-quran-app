@@ -12,26 +12,26 @@ class AyahsRelationManager extends RelationManager
 {
     protected static string $relationship = 'ayahs';
 
-    protected static ?string $title = 'الآيات';
+    protected static ?string $title = 'Ayahs';
 
     public function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('number_in_surah')
-                    ->label('رقم الآية')
+                    ->label(__('filament.ayah_number_in_surah'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('text_uthmani')
-                    ->label('النص العثماني')
+                    ->label(__('filament.text_uthmani'))
                     ->limit(80)
                     ->wrap(),
                 Tables\Columns\TextColumn::make('number_in_quran')
-                    ->label('رقمها في القرآن')
+                    ->label(__('filament.number_in_quran'))
                     ->sortable(),
             ])
             ->defaultSort('number_in_surah')
             ->actions([
-                Tables\Actions\ViewAction::make()->label('عرض'),
+                Tables\Actions\ViewAction::make()->label(__('filament.view')),
             ]);
     }
 
@@ -40,12 +40,12 @@ class AyahsRelationManager extends RelationManager
         return $infolist
             ->schema([
                 Infolists\Components\TextEntry::make('number_in_surah')
-                    ->label('رقم الآية'),
+                    ->label(__('filament.ayah_number_in_surah')),
                 Infolists\Components\TextEntry::make('text_uthmani')
-                    ->label('النص العثماني')
+                    ->label(__('filament.text_uthmani'))
                     ->columnSpanFull(),
                 Infolists\Components\TextEntry::make('number_in_quran')
-                    ->label('رقمها في القرآن'),
+                    ->label(__('filament.number_in_quran')),
             ]);
     }
 }

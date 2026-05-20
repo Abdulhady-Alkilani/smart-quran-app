@@ -1,0 +1,517 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+
+/* ===== Google Fonts: Tajawal (Arabic) ===== */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
+
+/* ===== Root Variables ===== */
+:root {
+    --quran-green: #1B5E20;
+    --quran-green-light: #2E7D32;
+    --quran-green-dark: #0D3B13;
+    --quran-gold: #C9A84C;
+    --quran-gold-light: #D4B96A;
+    --quran-burgundy: #5E1B20;
+    --quran-dark: #0F172A;
+}
+
+/* ===== Global Font Override ===== */
+body,
+.fi-body,
+.fi-sidebar,
+.fi-topbar,
+.fi-header,
+.fi-main,
+.fi-page {
+    font-family: 'Tajawal', 'Segoe UI', system-ui, sans-serif !important;
+    letter-spacing: 0.01em;
+}
+
+/* ===== RTL Direction Support ===== */
+html[dir="rtl"] {
+    direction: rtl;
+}
+
+html[dir="ltr"] {
+    direction: ltr;
+}
+
+html[dir="ltr"] body,
+html[dir="ltr"] .fi-body,
+html[dir="ltr"] .fi-sidebar,
+html[dir="ltr"] .fi-topbar,
+html[dir="ltr"] .fi-header,
+html[dir="ltr"] .fi-main,
+html[dir="ltr"] .fi-page {
+    font-family: 'Inter', 'Tajawal', 'Segoe UI', system-ui, sans-serif !important;
+}
+
+/* ===== Sidebar Styling ===== */
+.fi-sidebar {
+    background: linear-gradient(180deg, #0a2e0f 0%, #0D3B13 30%, #1B5E20 100%) !important;
+    border-left: 1px solid rgba(201, 168, 76, 0.15) !important;
+    border-right: none !important;
+}
+
+.fi-sidebar-header {
+    background: linear-gradient(180deg, #0a2e0f 0%, #0D3B13 100%) !important;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2) !important;
+    padding: 1rem !important;
+}
+
+/* Sidebar brand text */
+.fi-sidebar-header,
+.fi-sidebar-header a,
+.fi-sidebar-header span,
+.fi-sidebar-header div,
+.fi-logo {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    font-size: 1.1rem !important;
+    line-height: 1.4 !important;
+    white-space: normal !important;
+}
+
+/* Sidebar nav items */
+.fi-sidebar-nav-groups {
+    padding: 0.5rem !important;
+}
+
+.fi-sidebar-item {
+    margin-bottom: 2px !important;
+}
+
+.fi-sidebar-item a,
+.fi-sidebar-item button {
+    border-radius: 0.75rem !important;
+    padding: 0.6rem 1rem !important;
+    transition: all 0.25s ease !important;
+}
+
+.fi-sidebar-item-label {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 500 !important;
+}
+
+.fi-sidebar-item a:hover,
+.fi-sidebar-item button:hover {
+    background: rgba(201, 168, 76, 0.15) !important;
+    transform: translateX(-2px);
+}
+
+.fi-sidebar-item a:hover .fi-sidebar-item-label,
+.fi-sidebar-item button:hover .fi-sidebar-item-label {
+    color: #C9A84C !important;
+}
+
+/* Active sidebar item */
+.fi-sidebar-item-active a,
+.fi-sidebar-item-active button {
+    background: linear-gradient(135deg, rgba(201, 168, 76, 0.2), rgba(201, 168, 76, 0.08)) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.fi-sidebar-item-active a::before,
+.fi-sidebar-item-active button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #C9A84C, #D4B96A);
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-label {
+    color: #C9A84C !important;
+    font-weight: 700 !important;
+}
+
+/* Sidebar group labels */
+.fi-sidebar-group-label,
+.fi-sidebar-group-label span {
+    color: rgba(201, 168, 76, 0.8) !important;
+    font-size: 0.8rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    padding-top: 0.5rem !important;
+}
+
+/* Sidebar icons */
+.fi-sidebar-item-icon {
+    color: rgba(255, 255, 255, 0.6) !important;
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-icon,
+.fi-sidebar-item a:hover .fi-sidebar-item-icon,
+.fi-sidebar-item button:hover .fi-sidebar-item-icon {
+    color: #C9A84C !important;
+}
+
+/* ===== Top Bar ===== */
+.fi-topbar {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-bottom: 2px solid rgba(27, 94, 32, 0.1) !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+.dark .fi-topbar {
+    background: rgba(15, 23, 42, 0.95) !important;
+    border-bottom: 2px solid rgba(201, 168, 76, 0.15) !important;
+}
+
+/* ===== Page Headers ===== */
+.fi-header-heading {
+    color: #1B5E20 !important;
+    font-weight: 800 !important;
+    font-size: 1.5rem !important;
+}
+
+.dark .fi-header-heading {
+    color: #C9A84C !important;
+}
+
+.fi-header-subheading {
+    color: #64748b !important;
+    font-weight: 400 !important;
+}
+
+/* ===== Cards & Containers ===== */
+.fi-section,
+.fi-ta-ctn,
+.fi-wi {
+    border-radius: 1rem !important;
+    overflow: hidden;
+    border: 1px solid rgba(27, 94, 32, 0.08) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.3s ease !important;
+    position: relative;
+}
+
+.fi-section::before,
+.fi-ta-ctn::before,
+.fi-wi-stats-overview-stat::before,
+.fi-modal-window::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #1B5E20, #C9A84C);
+    z-index: 10;
+}
+
+.fi-section:hover,
+.fi-ta-ctn:hover,
+.fi-wi:hover {
+    box-shadow: 0 8px 30px rgba(27, 94, 32, 0.08) !important;
+}
+
+.dark .fi-section,
+.dark .fi-ta-ctn,
+.dark .fi-wi {
+    border-color: rgba(201, 168, 76, 0.1) !important;
+    background: rgba(15, 23, 42, 0.6) !important;
+}
+
+/* ===== Stats Widgets ===== */
+.fi-wi-stats-overview-stat {
+    border-radius: 1rem !important;
+    border: 1px solid rgba(27, 94, 32, 0.1) !important;
+    transition: all 0.3s ease !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.fi-wi-stats-overview-stat:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(27, 94, 32, 0.12) !important;
+}
+
+.fi-wi-stats-overview-stat-value {
+    font-weight: 800 !important;
+    font-size: 1.75rem !important;
+    color: #1B5E20 !important;
+}
+
+.dark .fi-wi-stats-overview-stat-value {
+    color: #C9A84C !important;
+}
+
+.fi-wi-stats-overview-stat-label {
+    font-weight: 600 !important;
+    color: #64748b !important;
+    font-size: 0.85rem !important;
+}
+
+/* ===== Table Styling ===== */
+.fi-ta-header-cell {
+    background: linear-gradient(180deg, #f8faf8, #f1f5f1) !important;
+    font-weight: 700 !important;
+    color: #1B5E20 !important;
+    text-transform: uppercase !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.05em !important;
+    border-bottom: 2px solid rgba(27, 94, 32, 0.15) !important;
+}
+
+.dark .fi-ta-header-cell {
+    background: linear-gradient(180deg, rgba(27, 94, 32, 0.15), rgba(27, 94, 32, 0.08)) !important;
+    color: #C9A84C !important;
+    border-bottom: 2px solid rgba(201, 168, 76, 0.15) !important;
+}
+
+.fi-ta-row {
+    transition: all 0.2s ease !important;
+}
+
+.fi-ta-row:hover {
+    background: rgba(27, 94, 32, 0.04) !important;
+}
+
+.dark .fi-ta-row:hover {
+    background: rgba(201, 168, 76, 0.05) !important;
+}
+
+/* Table row alternate colors */
+.fi-ta-row:nth-child(even) {
+    background: rgba(27, 94, 32, 0.02);
+}
+
+.dark .fi-ta-row:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* ===== Buttons ===== */
+.fi-btn-primary,
+.fi-btn[style*="primary"] {
+    border-radius: 0.75rem !important;
+    font-weight: 600 !important;
+    transition: all 0.25s ease !important;
+    box-shadow: 0 2px 8px rgba(27, 94, 32, 0.2) !important;
+}
+
+.fi-btn-primary:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 16px rgba(27, 94, 32, 0.3) !important;
+}
+
+/* ===== Form Inputs ===== */
+.fi-input,
+.fi-select-input,
+.fi-textarea {
+    border-radius: 0.75rem !important;
+    border: 1.5px solid #e2e8f0 !important;
+    transition: all 0.25s ease !important;
+    font-family: 'Tajawal', sans-serif !important;
+}
+
+.fi-input:focus,
+.fi-select-input:focus,
+.fi-textarea:focus {
+    border-color: #1B5E20 !important;
+    box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.1) !important;
+}
+
+.dark .fi-input:focus,
+.dark .fi-select-input:focus,
+.dark .fi-textarea:focus {
+    border-color: #C9A84C !important;
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1) !important;
+}
+
+/* ===== Badges ===== */
+.fi-badge {
+    border-radius: 2rem !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.75rem !important;
+}
+
+/* ===== Modal Styling ===== */
+.fi-modal-window {
+    border-radius: 1.25rem !important;
+    border: 1px solid rgba(27, 94, 32, 0.1) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ===== Login Page ===== */
+.fi-simple-layout {
+    background: linear-gradient(135deg, #0a2e0f 0%, #1B5E20 40%, #0D3B13 100%) !important;
+    min-height: 100vh;
+    position: relative;
+}
+
+.fi-simple-layout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C9A84C' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+}
+
+.fi-simple-main-ctn {
+    position: relative;
+    z-index: 1;
+}
+
+.fi-simple-page {
+    background: rgba(255, 255, 255, 0.97) !important;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(201, 168, 76, 0.2) !important;
+    backdrop-filter: blur(12px);
+}
+
+.dark .fi-simple-page {
+    background: rgba(15, 23, 42, 0.95) !important;
+    border: 1px solid rgba(201, 168, 76, 0.15) !important;
+}
+
+/* Login form heading */
+.fi-simple-header-heading {
+    color: #1B5E20 !important;
+    font-weight: 800 !important;
+    font-size: 1.5rem !important;
+}
+
+/* ===== Dashboard Layout ===== */
+.fi-main {
+    background: #f8faf8 !important;
+    padding: 2rem !important;
+}
+
+.dark .fi-main {
+    background: #0a0f1a !important;
+}
+
+/* ===== Breadcrumbs ===== */
+.fi-breadcrumbs li {
+    font-weight: 500 !important;
+}
+
+.fi-breadcrumbs a {
+    color: #1B5E20 !important;
+    transition: color 0.2s ease !important;
+}
+
+.fi-breadcrumbs a:hover {
+    color: #C9A84C !important;
+}
+
+/* ===== Tabs ===== */
+.fi-tabs-tab {
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.fi-tabs-tab-active {
+    border-bottom: 3px solid #1B5E20 !important;
+}
+
+.dark .fi-tabs-tab-active {
+    border-bottom: 3px solid #C9A84C !important;
+}
+
+/* ===== Notifications ===== */
+.fi-no {
+    border-radius: 1rem !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.fi-no::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #1B5E20, #C9A84C);
+    z-index: 10;
+}
+
+/* ===== Scrollbar ===== */
+.fi-sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.fi-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.fi-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(201, 168, 76, 0.3);
+    border-radius: 4px;
+}
+
+.fi-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(201, 168, 76, 0.5);
+}
+
+/* ===== Selection Color ===== */
+::selection {
+    background: rgba(27, 94, 32, 0.3);
+    color: #C9A84C;
+}
+
+/* ===== Smooth Transitions ===== */
+* {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: ease;
+    transition-duration: 150ms;
+}
+
+/* ===== Chart Widget ===== */
+.fi-wi-chart canvas {
+    border-radius: 0.75rem !important;
+}
+
+/* ===== Pagination ===== */
+.fi-pagination-item-btn {
+    border-radius: 0.5rem !important;
+    font-weight: 600 !important;
+}
+
+/* ===== Empty State ===== */
+.fi-ta-empty-state {
+    padding: 3rem !important;
+}
+
+.fi-ta-empty-state-icon {
+    color: rgba(27, 94, 32, 0.3) !important;
+}
+
+.fi-ta-empty-state-heading {
+    color: #1B5E20 !important;
+    font-weight: 700 !important;
+}
+
+.dark .fi-ta-empty-state-heading {
+    color: #C9A84C !important;
+}
+
+/* Top bar and Sidebar decorative lines removed for consistent right-side gradient design */
+
+/* ===== User Menu ===== */
+.fi-dropdown-panel {
+    border-radius: 1rem !important;
+    border: 1px solid rgba(27, 94, 32, 0.1) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1) !important;
+    z-index: 9999 !important;
+}

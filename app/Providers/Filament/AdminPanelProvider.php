@@ -4,6 +4,8 @@ namespace App\Providers\Filament;
 
 use App\Filament\Widgets\LatestRecitationsChart;
 use App\Filament\Widgets\StatsOverviewWidget;
+use BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch;
+use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -20,6 +22,9 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
+use Illuminate\Support\Facades\Auth;
+use Filament\Navigation\MenuItem;
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -28,9 +33,24 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->brandName(__('messages.app_name'))
+            ->font('Tajawal')
+            ->spa()
             ->colors([
                 'primary' => Color::hex('#1B5E20'),
+                'gray' => Color::Slate,
+                'danger' => Color::Rose,
+                'info' => Color::Sky,
+                'success' => Color::Emerald,
+                'warning' => Color::Amber,
+            ])
+            ->defaultThemeMode(ThemeMode::Light)
+            ->theme(asset('css/filament/admin/theme.css'))
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('العودة للمنصة')
+                    ->url(fn (): string => route('dashboard'))
+                    ->icon('heroicon-o-home'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

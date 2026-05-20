@@ -19,32 +19,41 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationLabel = 'المستخدمون';
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.users');
+    }
 
-    protected static ?string $modelLabel = 'مستخدم';
+    public static function getModelLabel(): string
+    {
+        return __('filament.user');
+    }
 
-    protected static ?string $pluralModelLabel = 'المستخدمون';
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.users');
+    }
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
-                    ->label('الاسم')
+                    ->label(__('filament.name'))
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('email')
-                    ->label('البريد الإلكتروني')
+                    ->label(__('filament.email'))
                     ->email()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('password')
-                    ->label('كلمة المرور')
+                    ->label(__('filament.password'))
                     ->password()
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $context): bool => $context === 'create'),
                 Forms\Components\Select::make('roles')
-                    ->label('الأدوار')
+                    ->label(__('filament.roles'))
                     ->relationship('roles', 'name')
                     ->multiple()
                     ->preload(),
@@ -56,13 +65,13 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('الاسم')
+                    ->label(__('filament.name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
-                    ->label('البريد الإلكتروني')
+                    ->label(__('filament.email'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('roles.name')
-                    ->label('الدور')
+                    ->label(__('filament.role'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'admin' => 'danger',
@@ -70,23 +79,23 @@ class UserResource extends Resource
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('memorizationProgress_count')
-                    ->label('آيات محفوظة')
+                    ->label(__('filament.memorized_ayahs'))
                     ->counts('memorizationProgress')
                     ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('تاريخ التسجيل')
+                    ->label(__('filament.registration_date'))
                     ->dateTime('Y-m-d')
                     ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('roles')
-                    ->label('الدور')
+                    ->label(__('filament.role'))
                     ->relationship('roles', 'name')
                     ->multiple()
                     ->preload(),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->label('عرض'),
+                Tables\Actions\ViewAction::make()->label(__('filament.view')),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -102,14 +111,14 @@ class UserResource extends Resource
         return $infolist
             ->schema([
                 Infolists\Components\TextEntry::make('name')
-                    ->label('الاسم'),
+                    ->label(__('filament.name')),
                 Infolists\Components\TextEntry::make('email')
-                    ->label('البريد الإلكتروني'),
+                    ->label(__('filament.email')),
                 Infolists\Components\TextEntry::make('roles.name')
-                    ->label('الدور')
+                    ->label(__('filament.role'))
                     ->badge(),
                 Infolists\Components\TextEntry::make('created_at')
-                    ->label('تاريخ التسجيل')
+                    ->label(__('filament.registration_date'))
                     ->dateTime('Y-m-d'),
             ]);
     }

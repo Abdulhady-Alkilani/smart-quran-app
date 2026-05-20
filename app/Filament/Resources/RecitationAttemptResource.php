@@ -18,11 +18,20 @@ class RecitationAttemptResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-microphone';
 
-    protected static ?string $navigationLabel = 'محاولات التسميع';
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.recitation_attempts');
+    }
 
-    protected static ?string $modelLabel = 'محاولة تسميع';
+    public static function getModelLabel(): string
+    {
+        return __('filament.recitation_attempt');
+    }
 
-    protected static ?string $pluralModelLabel = 'محاولات التسميع';
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.recitation_attempts');
+    }
 
     public static function canCreate(): bool
     {
@@ -34,13 +43,13 @@ class RecitationAttemptResource extends Resource
         return $form
             ->schema([
                 TextInput::make('user.name')
-                    ->label('الطالب')
+                    ->label(__('filament.user_name'))
                     ->disabled(),
                 TextInput::make('ayah.surah.name_ar')
-                    ->label('السورة')
+                    ->label(__('filament.surah_name'))
                     ->disabled(),
                 TextInput::make('similarity_score')
-                    ->label('نسبة التطابق')
+                    ->label(__('filament.similarity_score'))
                     ->disabled(),
             ]);
     }
@@ -50,42 +59,42 @@ class RecitationAttemptResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('الطالب')
+                    ->label(__('filament.user_name'))
                     ->searchable(),
                 Tables\Columns\TextColumn::make('ayah.surah.name_ar')
-                    ->label('السورة'),
+                    ->label(__('filament.surah_name')),
                 Tables\Columns\TextColumn::make('ayah.number_in_surah')
-                    ->label('رقم الآية'),
+                    ->label(__('filament.ayah_number_in_surah')),
                 Tables\Columns\TextColumn::make('similarity_score')
-                    ->label('نسبة التطابق')
+                    ->label(__('filament.similarity_score'))
                     ->suffix('%')
                     ->color(fn (float $state): string => $state >= 90 ? 'success' : ($state >= 70 ? 'warning' : 'danger')),
                 Tables\Columns\IconColumn::make('is_passed')
-                    ->label('ناجح')
+                    ->label(__('filament.is_passed'))
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle'),
                 Tables\Columns\TextColumn::make('mistakes_count')
-                    ->label('عدد الأخطاء')
+                    ->label(__('filament.mistakes_count'))
                     ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('التاريخ')
+                    ->label(__('filament.created_at'))
                     ->dateTime('Y-m-d H:i')
                     ->sortable(),
                 Tables\Columns\ViewColumn::make('audio_file_path')
-                    ->label('الاستماع')
+                    ->label(__('filament.audio_file'))
                     ->view('filament.columns.audio-player'),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_passed')
-                    ->label('حالة النجاح')
-                    ->placeholder('الكل')
-                    ->trueLabel('ناجح فقط')
-                    ->falseLabel('راسب فقط'),
+                    ->label(__('filament.status'))
+                    ->placeholder(__('filament.all'))
+                    ->trueLabel(__('filament.passed'))
+                    ->falseLabel(__('filament.failed')),
             ])
             ->defaultSort('created_at', 'desc')
             ->actions([
-                Tables\Actions\ViewAction::make()->label('عرض'),
+                Tables\Actions\ViewAction::make()->label(__('filament.view')),
             ])
             ->bulkActions([]);
     }
@@ -95,25 +104,25 @@ class RecitationAttemptResource extends Resource
         return $infolist
             ->schema([
                 Infolists\Components\TextEntry::make('user.name')
-                    ->label('الطالب'),
+                    ->label(__('filament.user_name')),
                 Infolists\Components\TextEntry::make('ayah.surah.name_ar')
-                    ->label('السورة'),
+                    ->label(__('filament.surah_name')),
                 Infolists\Components\TextEntry::make('similarity_score')
-                    ->label('نسبة التطابق')
+                    ->label(__('filament.similarity_score'))
                     ->suffix('%'),
                 Infolists\Components\IconEntry::make('is_passed')
-                    ->label('ناجح')
+                    ->label(__('filament.is_passed'))
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle'),
                 Infolists\Components\TextEntry::make('mistakes_count')
-                    ->label('عدد الأخطاء')
+                    ->label(__('filament.mistakes_count'))
                     ->badge(),
                 Infolists\Components\TextEntry::make('created_at')
-                    ->label('التاريخ')
+                    ->label(__('filament.created_at'))
                     ->dateTime('Y-m-d H:i'),
                 Infolists\Components\TextEntry::make('transcribed_text')
-                    ->label('نص التلاوة المتعرف عليه')
+                    ->label(__('filament.transcribed_text'))
                     ->columnSpanFull(),
             ]);
     }

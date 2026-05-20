@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ayah extends Model
 {
-    protected $fillable = ['surah_id', 'number_in_surah', 'number_in_quran', 'text_uthmani', 'text_imlaei', 'audio_url'];
+    protected $fillable = ['surah_id', 'number_in_surah', 'number_in_quran', 'text_uthmani', 'text_imlaei', 'text_tajweed', 'audio_url'];
 
     public function surah() {
         return $this->belongsTo(Surah::class);

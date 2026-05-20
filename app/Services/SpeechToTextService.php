@@ -9,68 +9,106 @@ class SpeechToTextService
 {
     public function transcribe(string $audioPath, string $language = 'ar'): ?string
     {
-        $geminiKey = config('services.gemini.key') ?? env('GEMINI_API_KEY');
-        $openaiKey = config('services.openai.key') ?? env('OPENAI_API_KEY');
+        $apiUrl = config('ai.api_url');
+        $apiKey = config('ai.api_key');
 
-        if ($openaiKey && $openaiKey !== 'your-openai-api-key-here') {
-            return $this->transcribeViaWhisper($audioPath, $language, $openaiKey);
+        if (! $apiUrl || ! $apiKey) {
+            Log::warning('AI API not configured, using mock transcription');
+            return $this->mockTranscription();
         }
 
-        if ($geminiKey && $geminiKey !== 'your-gemini-api-key-here') {
-            return $this->transcribeViaGemini($audioPath, $geminiKey);
-        }
-
-        return $this->mockTranscription();
+        return $this->transcribeViaLiteLLM($audioPath, $apiUrl, $apiKey);
     }
 
-    private function transcribeViaWhisper(string $audioPath, string $language, string $apiKey): ?string
+    private function transcribeViaLiteLLM(string $audioPath, string $apiUrl, string $apiKey): ?string
     {
         try {
-            $response = Http::withToken($apiKey)
-                ->timeout(60)
-                ->attach('file', file_get_contents($audioPath), 'audio.webm')
-                ->post('https://api.openai.com/v1/audio/transcriptions', [
-                    'model' => 'whisper-1',
-                    'language' => $language,
-                ]);
-
-            if ($response->successful()) {
-                return $response->json('text');
+            if (! file_exists($audioPath)) {
+                Log::error('Audio file not found: ' . $audioPath);
+                return null;
             }
-        } catch (\Exception $e) {
-            Log::error('Whisper transcription failed: '.$e->getMessage());
-        }
 
-        return null;
-    }
-
-    private function transcribeViaGemini(string $audioPath, string $apiKey): ?string
-    {
-        try {
             $audioData = base64_encode(file_get_contents($audioPath));
-            $mimeType = mime_content_type($audioPath) ?: 'audio/webm';
+            $mimeType = $this->resolveMimeType($audioPath);
 
-            $response = Http::withHeaders(['Content-Type' => 'application/json'])
-                ->timeout(60)
-                ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}", [
-                    'contents' => [
-                        [
-                            'parts' => [
-                                ['inline_data' => ['mime_type' => $mimeType, 'data' => $audioData]],
-                                ['text' => 'أعد كتابة ما تسمعه في هذا المقطع الصوتي بالضبط. اكتب النص العربي فقط بدون أي شرح إضافي.'],
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'x-litellm-api-key' => $apiKey,
+            ])
+            ->timeout(60)
+            ->post($apiUrl, [
+                'model' => config('ai.model', 'gemini-3-flash-preview'),
+                'messages' => [
+                    [
+                        'role' => 'user',
+                        'content' => [
+                            [
+                                'type' => 'text',
+                                'text' => 'أنت خبير في تفريغ التلاوات القرآنية. استمع لهذا المقطع الصوتي واكتب النص القرآني الذي تسمعه بالرسم العثماني بدقة تامة. أعد النص القرآني فقط بدون أي شرح أو تعليق إضافي.',
+                            ],
+                            [
+                                'type' => 'image_url',
+                                'image_url' => [
+                                    'url' => "data:{$mimeType};base64,{$audioData}",
+                                ],
                             ],
                         ],
                     ],
-                ]);
+                ],
+                'max_tokens' => config('ai.max_tokens', 4096),
+                'temperature' => 0.1, // Low temperature for accurate transcription
+            ]);
 
             if ($response->successful()) {
-                return $response->json('candidates.0.content.parts.0.text');
+                $text = $response->json('choices.0.message.content');
+                if ($text) {
+                    // Clean up the response - remove any non-Arabic text
+                    $text = trim($text);
+                    return $text;
+                }
             }
+
+            Log::error('LiteLLM transcription failed', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
         } catch (\Exception $e) {
-            Log::error('Gemini transcription failed: '.$e->getMessage());
+            Log::error('LiteLLM transcription error: ' . $e->getMessage());
         }
 
         return null;
+    }
+
+    /**
+     * Resolve MIME type with extension-based correction for audio files
+     */
+    private function resolveMimeType(string $filePath): string
+    {
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        $mimeMap = [
+            'weba' => 'audio/webm',
+            'webm' => 'audio/webm',
+            'ogg'  => 'audio/ogg',
+            'oga'  => 'audio/ogg',
+            'm4a'  => 'audio/mp4',
+            'mp3'  => 'audio/mpeg',
+            'wav'  => 'audio/wav',
+            'flac' => 'audio/flac',
+            'aac'  => 'audio/aac',
+        ];
+
+        if (isset($mimeMap[$extension])) {
+            return $mimeMap[$extension];
+        }
+
+        $detected = mime_content_type($filePath);
+        // Fix common misdetection: video/webm should be audio/webm for audio files
+        if ($detected === 'video/webm') {
+            return 'audio/webm';
+        }
+
+        return $detected ?: 'audio/webm';
     }
 
     private function mockTranscription(): string

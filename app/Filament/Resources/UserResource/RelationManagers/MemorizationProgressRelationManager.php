@@ -14,7 +14,7 @@ class MemorizationProgressRelationManager extends RelationManager
 {
     protected static string $relationship = 'memorizationProgress';
 
-    protected static ?string $title = 'تقدم الحفظ';
+    protected static ?string $title = 'Memorization Progress';
 
     protected static ?string $recordTitleAttribute = 'status';
 
@@ -23,28 +23,26 @@ class MemorizationProgressRelationManager extends RelationManager
         return $form
             ->schema([
                 Forms\Components\Select::make('status')
-                    ->label('الحالة')
+                    ->label(__('filament.status'))
                     ->options([
-                        'learning' => 'قيد التعلم',
-                        'memorized' => 'محفوظة',
+                        'learning' => __('filament.learning'),
+                        'memorized' => __('filament.memorized'),
                     ])
                     ->required(),
                 Forms\Components\TextInput::make('repetition_count')
-                    ->label('مرات التكرار')
+                    ->label(__('filament.repetition_count'))
                     ->numeric()
                     ->required(),
                 Forms\Components\TextInput::make('easiness_factor')
-                    ->label('عامل السهولة')
                     ->numeric()
                     ->required(),
                 Forms\Components\TextInput::make('interval_days')
-                    ->label('أيام الفاصل الزمني')
                     ->numeric()
                     ->required(),
                 Forms\Components\DatePicker::make('last_review_date')
-                    ->label('تاريخ آخر مراجعة'),
+                    ->label(__('filament.last_review')),
                 Forms\Components\DatePicker::make('next_review_date')
-                    ->label('المراجعة القادمة'),
+                    ->label(__('filament.next_review_date')),
             ]);
     }
 
@@ -53,11 +51,11 @@ class MemorizationProgressRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('ayah.surah.name_ar')
-                    ->label('السورة'),
+                    ->label(__('filament.surah_name')),
                 Tables\Columns\TextColumn::make('ayah.number_in_surah')
-                    ->label('رقم الآية'),
+                    ->label(__('filament.ayah_number_in_surah')),
                 Tables\Columns\TextColumn::make('status')
-                    ->label('الحالة')
+                    ->label(__('filament.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'memorized' => 'success',
@@ -65,26 +63,26 @@ class MemorizationProgressRelationManager extends RelationManager
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'memorized' => 'محفوظة',
-                        'learning' => 'قيد التعلم',
+                        'memorized' => __('filament.memorized'),
+                        'learning' => __('filament.learning'),
                         default => $state,
                     }),
                 Tables\Columns\TextColumn::make('repetition_count')
-                    ->label('مرات التكرار'),
+                    ->label(__('filament.repetition_count')),
                 Tables\Columns\TextColumn::make('next_review_date')
-                    ->label('المراجعة القادمة')
+                    ->label(__('filament.next_review_date'))
                     ->date('Y-m-d'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->label('الحالة')
+                    ->label(__('filament.status'))
                     ->options([
-                        'learning' => 'قيد التعلم',
-                        'memorized' => 'محفوظة',
+                        'learning' => __('filament.learning'),
+                        'memorized' => __('filament.memorized'),
                     ]),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->label('عرض'),
+                Tables\Actions\ViewAction::make()->label(__('filament.view')),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ]);
@@ -95,11 +93,11 @@ class MemorizationProgressRelationManager extends RelationManager
         return $infolist
             ->schema([
                 Infolists\Components\TextEntry::make('ayah.surah.name_ar')
-                    ->label('السورة'),
+                    ->label(__('filament.surah_name')),
                 Infolists\Components\TextEntry::make('ayah.number_in_surah')
-                    ->label('رقم الآية'),
+                    ->label(__('filament.ayah_number_in_surah')),
                 Infolists\Components\TextEntry::make('status')
-                    ->label('الحالة')
+                    ->label(__('filament.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'memorized' => 'success',
@@ -107,14 +105,14 @@ class MemorizationProgressRelationManager extends RelationManager
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'memorized' => 'محفوظة',
-                        'learning' => 'قيد التعلم',
+                        'memorized' => __('filament.memorized'),
+                        'learning' => __('filament.learning'),
                         default => $state,
                     }),
                 Infolists\Components\TextEntry::make('repetition_count')
-                    ->label('مرات التكرار'),
+                    ->label(__('filament.repetition_count')),
                 Infolists\Components\TextEntry::make('next_review_date')
-                    ->label('المراجعة القادمة')
+                    ->label(__('filament.next_review_date'))
                     ->date('Y-m-d'),
             ]);
     }

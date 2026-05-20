@@ -1,21 +1,26 @@
+@php
+    $locale = app()->getLocale();
+    $isRtl = $locale === 'ar';
+    $dir = $isRtl ? 'rtl' : 'ltr';
+@endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="rtl">
+<html lang="{{ str_replace('_', '-', $locale) }}" dir="{{ $dir }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="المنصة الذكية لحفظ القرآن الكريم ومتابعته - تسميع ذكي بالذكاء الاصطناعي">
+    <meta name="description" content="{{ __('messages.app_description') }}">
 
     <title>{{ config('app.name', 'Smart Quran Platform') }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
-<body class="font-tajawal antialiased bg-[#0F172A] text-[#f8fafc]" style="font-family: 'Tajawal', sans-serif;">
+<body class="font-tajawal antialiased bg-[#0F172A] text-[#f8fafc]" style="font-family: {{ $isRtl ? "'Tajawal', sans-serif" : "'Inter', 'Tajawal', sans-serif" }};">
     <div class="min-h-screen flex flex-col">
         @include('layouts.navigation')
 
@@ -27,7 +32,6 @@
         </header>
         @endisset
 
-        <!-- Flash Messages -->
         @if(session('success'))
         <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
              x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
@@ -38,7 +42,9 @@
                     <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                     <span>{{ session('success') }}</span>
                 </div>
-                <button @click="show = false" class="text-green-400/60 hover:text-green-400 transition">✕</button>
+                <button @click="show = false" class="text-green-400/60 hover:text-green-400 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
         </div>
         @endif
@@ -53,7 +59,9 @@
                     <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>
                     <span>{{ session('error') }}</span>
                 </div>
-                <button @click="show = false" class="text-red-400/60 hover:text-red-400 transition">✕</button>
+                <button @click="show = false" class="text-red-400/60 hover:text-red-400 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
         </div>
         @endif
@@ -74,14 +82,64 @@
             {{ $slot }}
         </main>
 
-        <!-- Footer -->
         <footer class="border-t border-[#1B5E20]/20 mt-auto">
             <div class="max-w-7xl mx-auto px-4 py-6 text-center text-[#f8fafc]/40 text-sm">
-                <p>&copy; {{ date('Y') }} المنصة الذكية لحفظ القرآن الكريم — جميع الحقوق محفوظة</p>
+                <p>&copy; {{ __('messages.footer.copyright', ['year' => date('Y')]) }}</p>
             </div>
         </footer>
     </div>
 
     @stack('scripts')
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('notifications', () => ({
+                dropdownOpen: false,
+                notifications: [],
+                unreadCount: 0,
+                init() {
+                    this.loadNotifications();
+                    setInterval(() => this.loadNotifications(), 60000);
+                },
+                toggleDropdown() {
+                    this.dropdownOpen = !this.dropdownOpen;
+                },
+                async loadNotifications() {
+                    try {
+                        const res = await fetch('{{ route("notifications.latest") }}', {
+                            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                            credentials: 'same-origin'
+                        });
+                        const data = await res.json();
+                        this.notifications = data.notifications;
+                        this.unreadCount = data.unread_count;
+                    } catch (e) {}
+                },
+                async markRead(id) {
+                    try {
+                        await fetch(`/notifications/${id}/read`, {
+                            method: 'POST',
+                            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
+                            credentials: 'same-origin'
+                        });
+                        const n = this.notifications.find(n => n.id === id);
+                        if (n) n.read_at = new Date().toISOString();
+                        this.unreadCount = Math.max(0, this.unreadCount - 1);
+                    } catch (e) {}
+                },
+                async markAllRead() {
+                    try {
+                        await fetch('{{ route("notifications.read-all") }}', {
+                            method: 'POST',
+                            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
+                            credentials: 'same-origin'
+                        });
+                        this.notifications.forEach(n => n.read_at = new Date().toISOString());
+                        this.unreadCount = 0;
+                    } catch (e) {}
+                }
+            }));
+        });
+    </script>
 </body>
 </html>
