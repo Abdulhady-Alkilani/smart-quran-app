@@ -31,20 +31,26 @@ class SpeechToTextService
             $audioData = base64_encode(file_get_contents($audioPath));
             $mimeType = $this->resolveMimeType($audioPath);
 
+            set_time_limit(120); // زيادة وقت التنفيذ لتجنب خطأ Timeout
+
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'x-litellm-api-key' => $apiKey,
             ])
-            ->timeout(60)
+            ->timeout(45)
             ->post($apiUrl, [
                 'model' => config('ai.model', 'gemini-3-flash-preview'),
                 'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => 'أنت نظام تفريغ صوتي حرفي. مهمتك الوحيدة هي كتابة ما تسمعه بالضبط. ممنوع عليك تصحيح أي خطأ أو تعديل أي كلمة. أنت لست مراجعاً قرآنياً بل مسجل صوت فقط.',
+                    ],
                     [
                         'role' => 'user',
                         'content' => [
                             [
                                 'type' => 'text',
-                                'text' => 'أنت خبير في تفريغ التلاوات القرآنية. استمع لهذا المقطع الصوتي واكتب النص القرآني الذي تسمعه بالرسم العثماني بدقة تامة. أعد النص القرآني فقط بدون أي شرح أو تعليق إضافي.',
+                                'text' => 'فرّغ هذا المقطع الصوتي حرفياً. اكتب كل كلمة كما نُطقت بالضبط بدون أي تصحيح. القواعد: 1) اكتب بالإملاء البسيط بدون تشكيل. 2) لا تصحح أي خطأ نطق. 3) لا تكمل أي جملة ناقصة. 4) لا تضف أي كلمة لم تُنطق. 5) إذا سمعت كلمة خاطئة اكتبها خاطئة كما هي. مثال: إذا نطق "العلمين" اكتب "العلمين" ولا تكتب "العالمين". أعد فقط النص المسموع.',
                             ],
                             [
                                 'type' => 'image_url',
@@ -56,15 +62,15 @@ class SpeechToTextService
                     ],
                 ],
                 'max_tokens' => config('ai.max_tokens', 4096),
-                'temperature' => 0.1, // Low temperature for accurate transcription
+                'temperature' => 0.0,
             ]);
 
             if ($response->successful()) {
                 $text = $response->json('choices.0.message.content');
                 if ($text) {
-                    // Clean up the response - remove any non-Arabic text
-                    $text = trim($text);
-                    return $text;
+                    $text = $this->cleanTranscription($text);
+                    Log::info('Transcription result', ['raw' => $response->json('choices.0.message.content'), 'cleaned' => $text]);
+                    return $text ?: null;
                 }
             }
 
@@ -77,6 +83,25 @@ class SpeechToTextService
         }
 
         return null;
+    }
+
+    /**
+     * تنظيف النص المفرّغ من الذكاء الاصطناعي
+     */
+    private function cleanTranscription(string $text): string
+    {
+        $text = trim($text);
+        // إزالة التشكيل
+        $text = preg_replace('/[\x{0610}-\x{061A}\x{064B}-\x{065F}\x{0670}\x{06D6}-\x{06DC}\x{06DF}-\x{06E8}\x{06EA}-\x{06ED}]/u', '', $text);
+        // توحيد الألف
+        $text = str_replace(['ٱ', 'إ', 'أ', 'آ'], 'ا', $text);
+        // إزالة أي أحرف غير عربية وغير مسافات
+        $text = preg_replace('/[^\p{Arabic}\s]/u', '', $text);
+        // تنظيف المسافات
+        $text = preg_replace('/\s+/', ' ', $text);
+        $text = trim($text);
+
+        return $text;
     }
 
     /**

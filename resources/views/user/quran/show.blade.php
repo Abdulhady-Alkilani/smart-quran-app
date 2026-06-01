@@ -15,9 +15,17 @@
                     {{ __('messages.tajweed.guide_title') }}
                 </a>
                 @endif
+                <a href="{{ route('recitation.surah', $surah) }}" class="flex items-center gap-2 bg-[#1B5E20]/30 text-green-400 hover:bg-[#1B5E20]/50 px-4 py-2 rounded-lg transition text-sm border border-[#1B5E20]/40">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                    {{ __('messages.surah_recitation.full_surah') }}
+                </a>
                 <a href="{{ route('quiz.complete', $surah) }}" class="flex items-center gap-2 bg-[#C9A84C]/20 text-[#C9A84C] hover:bg-[#C9A84C]/30 px-4 py-2 rounded-lg transition text-sm border border-[#C9A84C]/30">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                     {{ __('messages.complete_ayah.button') }}
+                </a>
+                <a href="{{ route('quiz.mcq', $surah) }}" class="flex items-center gap-2 bg-[#8B5CF6]/20 text-[#8B5CF6] hover:bg-[#8B5CF6]/30 px-4 py-2 rounded-lg transition text-sm border border-[#8B5CF6]/30">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    {{ __('messages.mcq_quiz.button') }}
                 </a>
                 <a href="{{ route('quiz.show', $surah) }}" class="flex items-center gap-2 bg-[#1B5E20]/20 text-[#1B5E20] hover:bg-[#1B5E20]/30 px-4 py-2 rounded-lg transition text-sm border border-[#1B5E20]/30">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>

@@ -8,13 +8,13 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div class="glass-card p-5 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#1B5E20] to-[#2E7D32]"></div>
-                <div class="text-3xl font-bold text-white mb-1">{{ $memorizedCount }}</div>
+                <div class="text-3xl font-bold text-[#f8fafc] mb-1">{{ $memorizedCount }}</div>
                 <div class="text-[#f8fafc]/60 text-sm">{{ __('messages.dashboard.memorized_ayahs') }}</div>
             </div>
             <div class="glass-card p-5 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#C9A84C] to-[#D4AF37]"></div>
                 @php $progressPct = min(100, round($memorizedCount / 62.36)); @endphp
-                <div class="text-3xl font-bold text-white mb-1">{{ $progressPct }}%</div>
+                <div class="text-3xl font-bold text-[#f8fafc] mb-1">{{ $progressPct }}%</div>
                 <div class="text-[#f8fafc]/60 text-sm mb-2">{{ __('messages.dashboard.progress') }}</div>
                 <div class="w-full bg-white/10 rounded-full h-1.5">
                     <div class="bg-gradient-to-r from-[#C9A84C] to-[#FFD700] rounded-full h-1.5 transition-all duration-1000" style="width: {{ $progressPct }}%"></div>
@@ -22,12 +22,12 @@
             </div>
             <div class="glass-card p-5 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#1E3A8A] to-[#3B82F6]"></div>
-                <div class="text-3xl font-bold text-white mb-1">{{ $dueReviews->count() }}</div>
+                <div class="text-3xl font-bold text-[#f8fafc] mb-1">{{ $dueReviews->count() }}</div>
                 <div class="text-[#f8fafc]/60 text-sm">{{ __('messages.dashboard.due_reviews') }}</div>
             </div>
             <div class="glass-card p-5 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-600 to-purple-400"></div>
-                <div class="text-3xl font-bold text-white mb-1">{{ $successRate }}%</div>
+                <div class="text-3xl font-bold text-[#f8fafc] mb-1">{{ $successRate }}%</div>
                 <div class="text-[#f8fafc]/60 text-sm">نسبة النجاح في التسميع</div>
             </div>
         </div>
@@ -183,8 +183,21 @@
     document.addEventListener('DOMContentLoaded', function() {
         var chartData = @json($chartData);
 
+        function getChartColors() {
+            var isLight = document.documentElement.classList.contains('light-mode');
+            return {
+                text: isLight ? 'rgba(55, 65, 81, 0.7)' : 'rgba(248, 250, 252, 0.4)',
+                grid: isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)',
+                doughnutNew: isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.1)',
+                doughnutBorder: isLight ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.2)'
+            };
+        }
+
+        var colors = getChartColors();
+        var charts = {};
+
         // Activity Line Chart
-        new Chart(document.getElementById('activityChart'), {
+        charts.activity = new Chart(document.getElementById('activityChart'), {
             type: 'line',
             data: {
                 labels: chartData.dailyLabels,
@@ -205,21 +218,21 @@
                 responsive: true,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { ticks: { color: 'rgba(248,250,252,0.4)', maxTicksLimit: 10 }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                    y: { beginAtZero: true, ticks: { color: 'rgba(248,250,252,0.4)', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    x: { ticks: { color: colors.text, maxTicksLimit: 10 }, grid: { color: colors.grid } },
+                    y: { beginAtZero: true, ticks: { color: colors.text, stepSize: 1 }, grid: { color: colors.grid } }
                 }
             }
         });
 
         // Status Doughnut Chart
-        new Chart(document.getElementById('statusChart'), {
+        charts.status = new Chart(document.getElementById('statusChart'), {
             type: 'doughnut',
             data: {
                 labels: ['محفوظ', 'قيد التعلم', 'جديد'],
                 datasets: [{
                     data: [chartData.statusDistribution.memorized, chartData.statusDistribution.learning, Math.min(chartData.statusDistribution.new, 100)],
-                    backgroundColor: ['#1B5E20', '#C9A84C', 'rgba(255,255,255,0.1)'],
-                    borderColor: ['#2E7D32', '#D4AF37', 'rgba(255,255,255,0.2)'],
+                    backgroundColor: ['#1B5E20', '#C9A84C', colors.doughnutNew],
+                    borderColor: ['#2E7D32', '#D4AF37', colors.doughnutBorder],
                     borderWidth: 2,
                 }]
             },
@@ -233,7 +246,7 @@
         // Scores Bar Chart
         var scoresEl = document.getElementById('scoresChart');
         if (scoresEl && chartData.scoreData.length > 0) {
-            new Chart(scoresEl, {
+            charts.scores = new Chart(scoresEl, {
                 type: 'bar',
                 data: {
                     labels: chartData.scoreLabels,
@@ -249,12 +262,41 @@
                     responsive: true,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { ticks: { color: 'rgba(248,250,252,0.4)' }, grid: { display: false } },
-                        y: { beginAtZero: true, max: 100, ticks: { color: 'rgba(248,250,252,0.4)', callback: function(v){return v+'%';} }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                        x: { ticks: { color: colors.text }, grid: { display: false } },
+                        y: { beginAtZero: true, max: 100, ticks: { color: colors.text, callback: function(v){return v+'%';} }, grid: { color: colors.grid } }
                     }
                 }
             });
         }
+
+        // Listen for theme change
+        document.addEventListener('themeChanged', function() {
+            var newColors = getChartColors();
+            
+            // Update Activity Chart
+            if (charts.activity) {
+                charts.activity.options.scales.x.ticks.color = newColors.text;
+                charts.activity.options.scales.x.grid.color = newColors.grid;
+                charts.activity.options.scales.y.ticks.color = newColors.text;
+                charts.activity.options.scales.y.grid.color = newColors.grid;
+                charts.activity.update();
+            }
+
+            // Update Doughnut Chart
+            if (charts.status) {
+                charts.status.data.datasets[0].backgroundColor[2] = newColors.doughnutNew;
+                charts.status.data.datasets[0].borderColor[2] = newColors.doughnutBorder;
+                charts.status.update();
+            }
+
+            // Update Scores Chart
+            if (charts.scores) {
+                charts.scores.options.scales.x.ticks.color = newColors.text;
+                charts.scores.options.scales.y.ticks.color = newColors.text;
+                charts.scores.options.scales.y.grid.color = newColors.grid;
+                charts.scores.update();
+            }
+        });
     });
     </script>
     @endpush

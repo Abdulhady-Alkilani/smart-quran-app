@@ -30,6 +30,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::prefix('recitation')->name('recitation.')->group(function () {
+        Route::get('/surah/{surah}', [RecitationController::class, 'createSurah'])->name('surah');
+        Route::post('/surah/{surah}', [RecitationController::class, 'storeSurah'])->name('surah.store');
         Route::get('/{ayah}', [RecitationController::class, 'create'])->name('create');
         Route::post('/{ayah}', [RecitationController::class, 'store'])->name('store');
     });
@@ -46,6 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('quiz')->name('quiz.')->group(function () {
         Route::get('/{surah}', [QuizController::class, 'show'])->name('show');
         Route::get('/{surah}/complete', [QuizController::class, 'completeAyah'])->name('complete');
+        Route::get('/{surah}/mcq', [QuizController::class, 'mcqQuiz'])->name('mcq');
         Route::post('/{question}/submit', [QuizController::class, 'submit'])->name('submit');
     });
 

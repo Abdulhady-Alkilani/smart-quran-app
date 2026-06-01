@@ -92,5 +92,44 @@
                 </div>
             </div>
         </div>
+
+        <div class="glass-card p-8 mt-6 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-orange-500"></div>
+            <h3 class="flex items-center gap-2 text-xl font-bold text-red-400 mb-6">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                {{ app()->getLocale() === 'ar' ? 'تغيير كلمة المرور' : 'Change Password' }}
+            </h3>
+
+            <form method="POST" action="{{ route('password.update') }}">
+                @csrf
+                @method('PUT')
+
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-[#C9A84C] mb-2 text-sm font-medium">{{ app()->getLocale() === 'ar' ? 'كلمة المرور الحالية' : 'Current Password' }}</label>
+                        <input type="password" name="current_password" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[#f8fafc] focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition">
+                        @error('current_password', 'updatePassword')<span class="text-red-400 text-sm mt-1 block">{{ $message }}</span>@enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-[#C9A84C] mb-2 text-sm font-medium">{{ __('messages.password') ?? (app()->getLocale() === 'ar' ? 'كلمة المرور الجديدة' : 'New Password') }}</label>
+                        <input type="password" name="password" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[#f8fafc] focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition">
+                        @error('password', 'updatePassword')<span class="text-red-400 text-sm mt-1 block">{{ $message }}</span>@enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-[#C9A84C] mb-2 text-sm font-medium">{{ __('messages.confirm_password') ?? (app()->getLocale() === 'ar' ? 'تأكيد كلمة المرور' : 'Confirm Password') }}</label>
+                        <input type="password" name="password_confirmation" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[#f8fafc] focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition">
+                        @error('password_confirmation', 'updatePassword')<span class="text-red-400 text-sm mt-1 block">{{ $message }}</span>@enderror
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="flex items-center gap-2 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white px-8 py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-red-500/30">
+                            {{ app()->getLocale() === 'ar' ? 'تحديث كلمة المرور' : 'Update Password' }}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </x-app-layout>

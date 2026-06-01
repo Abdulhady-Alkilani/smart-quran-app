@@ -15,6 +15,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+        (function() {
+            var theme = localStorage.getItem('quran_theme') || 'dark';
+            if (theme === 'light') {
+                document.documentElement.classList.add('light-mode');
+            }
+        })();
+    </script>
 </head>
 <body class="antialiased bg-[#0F172A] text-[#f8fafc]" style="font-family: {{ $isRtl ? "'Tajawal', sans-serif" : "'Inter', 'Tajawal', sans-serif" }};">
     <div class="min-h-screen islamic-pattern">
@@ -30,6 +38,10 @@
                            class="flex items-center gap-1.5 text-sm font-medium text-[#C9A84C] px-3 py-1.5 rounded-lg border border-[#C9A84C]/30 hover:bg-[#C9A84C]/10 transition-all duration-200">
                             {{ $locale === 'ar' ? 'English' : 'العربية' }}
                         </a>
+                        <button onclick="window.__toggleTheme && window.__toggleTheme()" class="theme-toggle-btn" title="Toggle theme">
+                            <svg class="theme-icon-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                            <svg class="theme-icon-light" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                        </button>
                         @auth
                             <a href="{{ route('dashboard') }}" class="flex items-center gap-1.5 text-[#f8fafc]/80 hover:text-[#C9A84C] transition-colors duration-200">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"/></svg>
@@ -59,12 +71,7 @@
                 </h1>
 
                 <p class="text-xl text-[#f8fafc]/70 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up stagger-2">
-                    @php
-                        $heroDesc = __('messages.welcome.hero_description');
-                        $heroDesc = str_replace(':ai', '<span class="text-[#C9A84C] font-bold">' . __('messages.welcome.ai') . '</span>', $heroDesc);
-                        $heroDesc = str_replace(':spaced', '<span class="text-[#C9A84C] font-bold">' . __('messages.welcome.spaced') . '</span>', $heroDesc);
-                    @endphp
-                    {!! $heroDesc !!}
+                    {{ __('messages.welcome.hero_description') }}
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up stagger-3">
@@ -179,12 +186,39 @@
                         <span>Laravel 12</span>
                         <span>•</span>
                         <span>FilamentPHP</span>
-                        <span>•</span>
-                        <span>AI Powered</span>
                     </div>
                 </div>
             </div>
         </footer>
     </div>
+
+    <script>
+        (function() {
+            function updateThemeIcons() {
+                var isLight = document.documentElement.classList.contains('light-mode');
+                var darkIcons = document.querySelectorAll('.theme-icon-dark');
+                var lightIcons = document.querySelectorAll('.theme-icon-light');
+                for (var i = 0; i < darkIcons.length; i++) {
+                    darkIcons[i].style.display = isLight ? 'none' : 'block';
+                }
+                for (var i = 0; i < lightIcons.length; i++) {
+                    lightIcons[i].style.display = isLight ? 'block' : 'none';
+                }
+            }
+            window.__toggleTheme = function() {
+                var html = document.documentElement;
+                var isLight = html.classList.contains('light-mode');
+                if (isLight) {
+                    html.classList.remove('light-mode');
+                    localStorage.setItem('quran_theme', 'dark');
+                } else {
+                    html.classList.add('light-mode');
+                    localStorage.setItem('quran_theme', 'light');
+                }
+                updateThemeIcons();
+            };
+            document.addEventListener('DOMContentLoaded', updateThemeIcons);
+        })();
+    </script>
 </body>
 </html>

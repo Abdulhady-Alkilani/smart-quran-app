@@ -19,6 +19,16 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
+
+    <script>
+        // Apply theme immediately to prevent flash
+        (function() {
+            var theme = localStorage.getItem('quran_theme') || 'dark';
+            if (theme === 'light') {
+                document.documentElement.classList.add('light-mode');
+            }
+        })();
+    </script>
 </head>
 <body class="font-tajawal antialiased bg-[#0F172A] text-[#f8fafc]" style="font-family: {{ $isRtl ? "'Tajawal', sans-serif" : "'Inter', 'Tajawal', sans-serif" }};">
     <div class="min-h-screen flex flex-col">
@@ -140,6 +150,40 @@
                 }
             }));
         });
+    </script>
+
+    <script>
+        // Theme Toggle
+        (function() {
+            function updateThemeIcons() {
+                var isLight = document.documentElement.classList.contains('light-mode');
+                var darkIcons = document.querySelectorAll('.theme-icon-dark');
+                var lightIcons = document.querySelectorAll('.theme-icon-light');
+                for (var i = 0; i < darkIcons.length; i++) {
+                    darkIcons[i].style.display = isLight ? 'none' : 'block';
+                }
+                for (var i = 0; i < lightIcons.length; i++) {
+                    lightIcons[i].style.display = isLight ? 'block' : 'none';
+                }
+            }
+
+            window.__toggleTheme = function() {
+                var html = document.documentElement;
+                var isLight = html.classList.contains('light-mode');
+                if (isLight) {
+                    html.classList.remove('light-mode');
+                    localStorage.setItem('quran_theme', 'dark');
+                } else {
+                    html.classList.add('light-mode');
+                    localStorage.setItem('quran_theme', 'light');
+                }
+                updateThemeIcons();
+                document.dispatchEvent(new CustomEvent('themeChanged', { detail: { isLight: !isLight } }));
+            };
+
+            // Update icons on load
+            document.addEventListener('DOMContentLoaded', updateThemeIcons);
+        })();
     </script>
 </body>
 </html>

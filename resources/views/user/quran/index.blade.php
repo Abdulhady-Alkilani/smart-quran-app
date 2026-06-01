@@ -31,7 +31,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($surahs as $surah)
             <a href="{{ route('quran.show', $surah) }}"
-               x-show="matchesSurah('{{ $surah->name_ar }}', '{{ $surah->name_en }}', '{{ $surah->revelation_type }}')"
+               x-show="matchesSurah('{{ addslashes($surah->name_ar) }}', '{{ addslashes($surah->name_en) }}', '{{ $surah->revelation_type }}')"
                x-transition:enter="transition ease-out duration-300"
                x-transition:enter-start="opacity-0 scale-95"
                x-transition:enter-end="opacity-100 scale-100"
@@ -68,24 +68,53 @@
             search: '',
             filter: '',
             filteredCount: {{ count($surahs) }},
+            totalSurahs: {{ count($surahs) }},
+
+            normalizeArabic(text) {
+                if (!text) return '';
+                // Remove diacritics (tashkeel)
+                text = text.replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g, '');
+                // Normalize alef variants to plain alef
+                text = text.replace(/[\u0622\u0623\u0625\u0671]/g, '\u0627');
+                // Normalize taa marbuta to haa
+                text = text.replace(/\u0629/g, '\u0647');
+                // Normalize alef maqsura to ya
+                text = text.replace(/\u0649/g, '\u064A');
+                // Remove tatweel
+                text = text.replace(/\u0640/g, '');
+                return text.trim();
+            },
 
             matchesSurah(nameAr, nameEn, revelationType) {
-                const searchMatch = !this.search ||
-                    nameAr.includes(this.search) ||
-                    nameEn.toLowerCase().includes(this.search.toLowerCase());
-                const filterMatch = !this.filter || revelationType === this.filter;
+                var searchTerm = this.search.trim();
+                var searchMatch = true;
+                if (searchTerm) {
+                    var normalizedSearch = this.normalizeArabic(searchTerm);
+                    var normalizedNameAr = this.normalizeArabic(nameAr);
+                    searchMatch = normalizedNameAr.includes(normalizedSearch) ||
+                        nameEn.toLowerCase().includes(searchTerm.toLowerCase());
+                }
+                var filterMatch = !this.filter || revelationType === this.filter;
                 return searchMatch && filterMatch;
             },
 
             init() {
-                this.$watch('search', () => this.updateCount());
-                this.$watch('filter', () => this.updateCount());
+                var self = this;
+                this.$watch('search', function() { self.updateCount(); });
+                this.$watch('filter', function() { self.updateCount(); });
             },
 
             updateCount() {
-                this.$nextTick(() => {
-                    const visible = this.$el.querySelectorAll('.grid > a:not([style*="display: none"])');
-                    this.filteredCount = visible.length;
+                var self = this;
+                this.$nextTick(function() {
+                    var cards = self.$el.querySelectorAll('.grid > a');
+                    var count = 0;
+                    for (var i = 0; i < cards.length; i++) {
+                        if (cards[i].style.display !== 'none') {
+                            count++;
+                        }
+                    }
+                    self.filteredCount = count;
                 });
             }
         }

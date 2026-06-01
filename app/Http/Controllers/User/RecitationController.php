@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Surah;
 use App\Models\Ayah;
 use App\Models\RecitationAttempt;
 use App\Models\UserMemorizationProgress;
@@ -92,6 +93,104 @@ class RecitationController extends Controller
                     'reference_text' => $ayah->text_imlaei,
                     'word_diff' => $matchResult['word_diff'],
                     'pass_threshold' => 90,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ في معالجة الصوت: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function createSurah($surah)
+    {
+        if (!$surah instanceof Surah) {
+            $surah = Surah::where('number', $surah)->orWhere('id', $surah)->firstOrFail();
+        }
+
+        $ayahs = $surah->ayahs()->orderBy('number_in_surah')->get();
+
+        return view('user.recitation.surah-recitation', compact('surah', 'ayahs'));
+    }
+
+    public function storeSurah(Request $request, $surah)
+    {
+        if (!$surah instanceof Surah) {
+            $surah = Surah::where('number', $surah)->orWhere('id', $surah)->firstOrFail();
+        }
+
+        $request->validate([
+            'audio' => 'required|file',
+        ]);
+
+        $user = $request->user();
+        $path = $request->file('audio')->store('recitations', 'public');
+        $ayahs = $surah->ayahs()->orderBy('number_in_surah')->get();
+
+        // Concatenate all ayah texts for full surah comparison
+        $fullSurahText = $ayahs->pluck('text_imlaei')->implode(' ');
+
+        try {
+            $audioFullPath = storage_path('app/public/'.$path);
+            $transcribedText = $this->speechService->transcribe($audioFullPath);
+
+            if (! $transcribedText) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'فشل في تحويل الصوت إلى نص',
+                ], 500);
+            }
+
+            $matchResult = $this->textMatching->match($transcribedText, $fullSurahText);
+
+            // Create attempt for the first ayah as reference
+            $firstAyah = $ayahs->first();
+            RecitationAttempt::create([
+                'user_id' => $user->id,
+                'ayah_id' => $firstAyah->id,
+                'audio_file_path' => $path,
+                'transcribed_text' => $transcribedText,
+                'similarity_score' => $matchResult['similarity_score'],
+                'mistakes_count' => $matchResult['mistakes_count'],
+                'is_passed' => $matchResult['is_passed'],
+            ]);
+
+            // If passed, update memorization progress for all ayahs in the surah
+            if ($matchResult['is_passed']) {
+                foreach ($ayahs as $ayah) {
+                    $progress = UserMemorizationProgress::where('user_id', $user->id)
+                        ->where('ayah_id', $ayah->id)->first();
+
+                    if ($progress) {
+                        $srsData = $this->srsService->calculateNextReview($progress, $matchResult['similarity_score']);
+                        $progress->update($srsData);
+                    } else {
+                        UserMemorizationProgress::create([
+                            'user_id' => $user->id,
+                            'ayah_id' => $ayah->id,
+                            'status' => 'learning',
+                            'repetition_count' => 1,
+                            'easiness_factor' => 2.5,
+                            'interval_days' => 1,
+                            'last_review_date' => now(),
+                            'next_review_date' => now()->addDay(),
+                        ]);
+                    }
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'result' => [
+                    'similarity_score' => number_format($matchResult['similarity_score'], 1),
+                    'mistakes_count' => $matchResult['mistakes_count'],
+                    'is_passed' => $matchResult['is_passed'],
+                    'transcribed_text' => $transcribedText,
+                    'reference_text' => $fullSurahText,
+                    'word_diff' => $matchResult['word_diff'],
+                    'pass_threshold' => 90,
+                    'ayahs_count' => $ayahs->count(),
                 ],
             ]);
         } catch (\Exception $e) {
