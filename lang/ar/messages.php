@@ -120,6 +120,7 @@ return [
         'learning' => 'قيد التعلم',
         'new' => 'جديدة',
         'start_memorizing' => 'ابدأ الحفظ',
+        'added_to_learning' => 'تم الإضافة',
         'recite' => 'سمّع',
         'listen' => 'استمع للتلاوة الصحيحة',
     ],

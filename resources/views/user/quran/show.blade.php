@@ -137,13 +137,20 @@
 
                 <div class="flex justify-end items-center gap-3 opacity-60 group-hover:opacity-100 transition">
                     @if($status !== 'memorized')
-                    <form method="POST" action="{{ route('quran.start', $ayah) }}" class="inline">
-                        @csrf
-                        <button type="submit" class="flex items-center gap-1.5 bg-[#C9A84C]/20 hover:bg-[#C9A84C]/30 text-[#C9A84C] px-4 py-2 rounded-lg transition text-sm border border-[#C9A84C]/20">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                            {{ __('messages.quran.start_memorizing') }}
-                        </button>
-                    </form>
+                        @if($status === 'learning')
+                        <div class="flex items-center gap-1.5 bg-[#C9A84C]/10 text-[#C9A84C]/70 px-4 py-2 rounded-lg text-sm border border-[#C9A84C]/20 cursor-default">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            {{ __('messages.quran.added_to_learning') }}
+                        </div>
+                        @else
+                        <form method="POST" action="{{ route('quran.start', $ayah) }}" class="inline">
+                            @csrf
+                            <button type="submit" class="flex items-center gap-1.5 bg-[#C9A84C]/20 hover:bg-[#C9A84C]/30 text-[#C9A84C] px-4 py-2 rounded-lg transition text-sm border border-[#C9A84C]/20">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                                {{ __('messages.quran.start_memorizing') }}
+                            </button>
+                        </form>
+                        @endif
                     @endif
                     <a href="{{ route('recitation.create', $ayah) }}" class="flex items-center gap-1.5 bg-[#1B5E20] hover:bg-[#2E7D32] text-white px-4 py-2 rounded-lg transition text-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
