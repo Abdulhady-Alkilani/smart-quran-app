@@ -13,7 +13,7 @@
             </div>
             <div class="glass-card p-5 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#C9A84C] to-[#D4AF37]"></div>
-                @php $progressPct = min(100, round($memorizedCount / 62.36)); @endphp
+                @php $progressPct = min(100, round($memorizedCount / 62.36, 2)); @endphp
                 <div class="text-3xl font-bold text-[#f8fafc] mb-1">{{ $progressPct }}%</div>
                 <div class="text-[#f8fafc]/60 text-sm mb-2">{{ __('messages.dashboard.progress') }}</div>
                 <div class="w-full bg-white/10 rounded-full h-1.5">
