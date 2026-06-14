@@ -63,6 +63,19 @@
         </a>
         @endif
 
+        <a href="{{ route('hifz.surah.select') }}" class="glass-card p-5 mb-6 flex items-center justify-between group hover:border-[#C9A84C]/40 transition-all duration-300 block bg-gradient-to-r from-[#C9A84C]/5 to-transparent border border-[#C9A84C]/10">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-[#C9A84C] to-[#FFD700] flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-[#C9A84C]/20">
+                    <svg class="w-7 h-7 text-[#0F172A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                </div>
+                <div>
+                    <div class="font-bold text-[#C9A84C] text-lg">تسميع سورة كاملة غيبياً</div>
+                    <div class="text-[#f8fafc]/50 text-sm">اختر سورة وقم بتسميعها كاملة غيبياً عبر الميكروفون</div>
+                </div>
+            </div>
+            <svg class="w-6 h-6 text-[#C9A84C] group-hover:-translate-x-1 transition-transform transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </a>
+
         @if($surahs->count() > 1)
         <div class="mb-6">
             <form method="GET" action="{{ route('hifz.index') }}" class="flex items-center gap-3">

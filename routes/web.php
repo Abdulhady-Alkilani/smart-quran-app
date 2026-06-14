@@ -41,6 +41,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('hifz')->name('hifz.')->group(function () {
         Route::get('/', [HifzController::class, 'index'])->name('index');
+        
+        Route::get('/surah/select', [HifzController::class, 'selectSurah'])->name('surah.select');
+        Route::get('/surah/{surah}/recite', [HifzController::class, 'reciteSurah'])->name('surah.recite');
+        Route::post('/surah/{surah}/submit', [HifzController::class, 'submitSurah'])->name('surah.submit');
+        
         Route::get('/{ayah}', [HifzController::class, 'recite'])->name('recite');
         Route::post('/{ayah}', [HifzController::class, 'submit'])->name('submit');
     });

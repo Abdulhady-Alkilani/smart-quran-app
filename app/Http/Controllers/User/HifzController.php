@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ayah;
+use App\Models\Surah;
 use App\Models\RecitationAttempt;
 use App\Models\UserMemorizationProgress;
 use App\Services\SpacedRepetitionService;
@@ -152,6 +153,76 @@ class HifzController extends Controller
                     'transcribed_text' => $transcribedText,
                     'reference_text' => $ayah->text_imlaei,
                     'reference_uthmani' => $ayah->text_uthmani,
+                    'word_diff' => $matchResult['word_diff'],
+                    'pass_threshold' => 90,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ في معالجة الصوت: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function selectSurah()
+    {
+        $surahs = Surah::orderBy('number')->get();
+        return view('user.hifz.select-surah', compact('surahs'));
+    }
+
+    public function reciteSurah(Surah $surah)
+    {
+        $ayahs = $surah->ayahs()->orderBy('number_in_surah')->get();
+        return view('user.hifz.recite-surah', compact('surah', 'ayahs'));
+    }
+
+    public function submitSurah(Request $request, Surah $surah)
+    {
+        $request->validate([
+            'audio' => 'required|file',
+        ]);
+
+        $user = $request->user();
+        $path = $request->file('audio')->store('recitations', 'public');
+        $ayahs = $surah->ayahs()->orderBy('number_in_surah')->get();
+        $fullSurahText = $ayahs->pluck('text_imlaei')->implode(' ');
+
+        $firstAyah = $ayahs->first();
+        $attempt = RecitationAttempt::create([
+            'user_id' => $user->id,
+            'ayah_id' => $firstAyah->id,
+            'audio_file_path' => $path,
+        ]);
+
+        try {
+            $audioFullPath = storage_path('app/public/' . $path);
+            $transcribedText = $this->speechService->transcribe($audioFullPath);
+
+            if (!$transcribedText) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'فشل في تحويل الصوت إلى نص',
+                ], 500);
+            }
+
+            $matchResult = $this->textMatching->match($transcribedText, $fullSurahText);
+
+            $attempt->update([
+                'transcribed_text' => $transcribedText,
+                'similarity_score' => $matchResult['similarity_score'],
+                'mistakes_count' => $matchResult['mistakes_count'],
+                'is_passed' => $matchResult['is_passed'],
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'result' => [
+                    'similarity_score' => number_format($matchResult['similarity_score'], 1),
+                    'mistakes_count' => $matchResult['mistakes_count'],
+                    'is_passed' => $matchResult['is_passed'],
+                    'transcribed_text' => $transcribedText,
+                    'reference_text' => $fullSurahText,
+                    'reference_uthmani' => $ayahs->pluck('text_uthmani')->implode(' ۞ '),
                     'word_diff' => $matchResult['word_diff'],
                     'pass_threshold' => 90,
                 ],
