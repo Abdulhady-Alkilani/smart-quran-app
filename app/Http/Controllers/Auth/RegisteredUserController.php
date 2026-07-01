@@ -42,6 +42,11 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        $studentRole = \App\Models\Role::where('name', 'student')->first();
+        if ($studentRole) {
+            $user->roles()->attach($studentRole);
+        }
+
         event(new Registered($user));
 
         Auth::login($user);
